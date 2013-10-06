@@ -1,0 +1,35 @@
+ public void Inserir(Hardware hardware)
+        {
+            string query = @"INSERT INTO hardware 
+                                (numEquip, codTipoHardware, codLocal, configEquip) 
+                                VALUES (?numEquip, ?codTipoHardware, ?codLocal, ?configEquip)";
+
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("numEquip", hardware.numEquip);
+            parametros.Add("codTipoHardware", hardware.codTipoHardware);
+            parametros.Add("codLocal", hardware.codLocal);
+            parametros.Add("configEquip", hardware.configEquip);
+            
+
+            SistemaDAO.ExecutarComando(query, parametros);
+        }
+        
+        
+        public static int ExecutarComando(string comando, Dictionary<string, object> parametros)
+        {
+            using (SqlConnection connection = ObterConexao())
+            {
+                SqlCommand command = connection.CreateCommand();
+                command.CommandText = comando;
+
+                if (parametros != null)
+                {
+                    foreach (string key in parametros.Keys)
+                    {
+                        command.Parameters.AddWithValue("?" + key, parametros[key]);
+                    }
+                }
+
+                return command.ExecuteNonQuery();
+            }
+        }
